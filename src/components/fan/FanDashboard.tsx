@@ -72,7 +72,7 @@ export default function FanDashboard({ shared, onSharedUpdate }: Props) {
   const agentState = shared.agentState;
   const tips = shared.tips;
   const status = STATUS_CONFIG[agentState.status];
-  const totalSpent = tips.filter(t => t.status === 'confirmed').reduce((s, t) => s + t.amount, 0);
+  const totalSpent = tips.reduce((s, t) => s + t.amount, 0);
   const spendingPct = activeRule ? Math.min((agentState.spentThisStream / activeRule.maxPerStream) * 100, 100) : 0;
 
   return (
