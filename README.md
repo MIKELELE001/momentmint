@@ -1,27 +1,19 @@
 # ⚡ MomentMint
-**Autonomous Tipping Agent for Rumble Creators**
+**Autonomous Tipping Agent for Live Creators**
 
-> Built for Tether Hackathon Galáctica: WDK Edition 1 | Track: 💸 Tipping Bot
+---
+
+## Overview
+
+MomentMint is an AI-powered agent that detects peak moments in live streams and automatically tips creators through a self-custodial Tether WDK wallet — with zero manual input after setup.
+
+Fans set their rules once. The agent does the rest.
 
 ---
 
 ## The Problem
 
-Tipping on Rumble is manual. By the time a fan reaches for their wallet, the moment is gone.
-
-Creators miss out on revenue at their most engaging moments. Fans forget to tip even when they want to. The emotional impulse and the financial action are disconnected.
-
-## The Solution
-
-MomentMint is an AI agent that watches a Rumble livestream and automatically tips the creator the moment something exciting happens — no manual input required.
-
-A fan sets their rules once:
-- Which creator to watch
-- How much to tip per moment
-- What counts as a moment (chat explosion, milestone, keyword, celebration)
-- Maximum spend per stream
-
-The agent does the rest — detecting moments, executing tips through a Tether WDK self-custodial wallet, and logging every transaction on-chain.
+Tipping during a livestream is manual and slow. By the time a fan reaches for their wallet, the moment is gone. Creators miss revenue at their most engaging moments. The emotional impulse and the financial action are disconnected.
 
 ---
 
@@ -31,28 +23,30 @@ The agent does the rest — detecting moments, executing tips through a Tether W
 WATCH stream → DETECT moment → CHECK rules → VERIFY balance → EXECUTE tip → LOG on-chain → REPEAT
 ```
 
-The agent runs continuously, reasoning about each stream snapshot:
-- Is this moment significant enough?
-- Does it match the fan's trigger rules?
-- Is there sufficient balance?
-- Has the spending limit been reached?
+A fan configures their agent once:
+- Which creator to watch
+- How much to tip per moment
+- What triggers a tip — chat explosion, viewer milestone, keyword, celebration
+- Maximum spend per stream
+
+The agent runs autonomously, reasoning about each stream snapshot and executing tips through a Tether WDK self-custodial wallet when conditions are met.
 
 ---
 
 ## Features
 
-**Fan Side**
-- Connect self-custodial WDK wallet (USDT, XAU₮, BTC)
-- Configure agent rules — triggers, tip amount, spending limit
-- Real-time activity feed showing every tip fired
-- Live spending tracker with budget progress bar
+**Fan Dashboard**
+- Connect self-custodial WDK wallet — USDT, XAU₮, BTC
+- Configure agent rules with custom triggers and spending limits
+- Real-time activity feed of every tip fired
+- Live budget tracker with progress bar
 - Pause, resume, or stop agent at any time
 
-**Creator Side**
+**Creator Dashboard**
 - Live tip notifications during streams
 - Top fans leaderboard
 - Earnings breakdown by moment type
-- Transaction history
+- Full transaction history
 
 ---
 
@@ -62,7 +56,7 @@ The agent runs continuously, reasoning about each stream snapshot:
 |-------|-----------|
 | Agent Framework | OpenClaw |
 | Wallet & Transactions | Tether WDK |
-| AI Moment Detection | Claude (Anthropic) — server-side only |
+| AI Moment Detection | Claude (Anthropic) |
 | Frontend | React + TypeScript |
 | Deployment | Vercel |
 
@@ -70,14 +64,14 @@ The agent runs continuously, reasoning about each stream snapshot:
 
 ## Security
 
-- All API keys are server-side only — never exposed in the browser
-- Self-custodial wallet — fan owns their keys via WDK
-- Spending limits enforced by agent logic
-- No auto-trading without explicit fan consent
+- All API keys are server-side only — never exposed in the browser bundle
+- Self-custodial wallet — user owns their keys via WDK
+- Spending limits enforced by agent logic before every transaction
+- No transactions execute without explicit user-configured consent
 
 ---
 
-## Running Locally
+## Getting Started
 
 ```bash
 # Install dependencies
@@ -101,26 +95,31 @@ npm run dev
 ```
 src/
 ├── components/
-│   ├── fan/          # Fan dashboard, wallet, agent setup, tip feed
-│   └── creator/      # Creator earnings and live tip feed
+│   ├── fan/              # Fan dashboard, wallet, agent setup, tip feed
+│   └── creator/          # Creator earnings and live tip feed
 ├── agent/
 │   ├── tipAgent.ts       # Core agent loop
-│   └── momentDetector.ts # Moment detection logic
+│   └── momentDetector.ts # AI moment detection logic
 ├── services/
-│   └── wdk.ts        # Tether WDK integration layer
-└── types/            # TypeScript types
+│   └── wdk.ts            # Tether WDK integration layer
+└── types/                # TypeScript types
 api/
-└── analyze.ts        # Server-side Claude AI analysis
+└── analyze.ts            # Server-side AI analysis
 ```
 
 ---
 
-## Hackathon
+## WDK Integration
 
-- **Event:** Tether Hackathon Galáctica: WDK Edition 1
-- **Track:** 💸 Tipping Bot
-- **Submission Deadline:** March 22, 2026
-- **Platform:** DoraHacks
+All wallet logic is isolated in `src/services/wdk.ts`. This is the single integration point for Tether WDK — wallet creation, balance queries, and transaction signing all live here.
+
+```bash
+# Install Tether WDK
+npm install @tetherto/wdk @tetherto/wdk-wallet-evm
+
+# Install WDK agent skills
+npx skills add tetherto/wdk-agent-skills
+```
 
 ---
 
