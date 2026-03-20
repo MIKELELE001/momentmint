@@ -14,9 +14,9 @@ const MOMENT_EMOJIS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  confirmed: '#22d3a5',
-  pending: '#F0B90B',
-  failed: '#ef4444',
+  confirmed: '#10B981',
+  pending: '#F59E0B',
+  failed: '#EF4444',
 };
 
 const timeAgo = (ts: number): string => {
@@ -35,11 +35,11 @@ export default function TipFeed({ tips, moments }: Props) {
   if (allEvents.length === 0) {
     return (
       <div style={{
-        background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-        borderRadius: 16, padding: 32, textAlign: 'center',
+        background: '#F0EBE1', borderRadius: 16, padding: '40px 20px', textAlign: 'center',
+        boxShadow: '6px 6px 12px #d1cabe, -6px -6px 12px #ffffff'
       }}>
-        <div style={{ fontSize: 28, marginBottom: 12 }}>👁️</div>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', letterSpacing: '1px' }}>
+        <div style={{ fontSize: 32, marginBottom: 16 }}>👁️</div>
+        <div style={{ fontSize: 13, color: '#6B7280', letterSpacing: '1px', fontWeight: 700 }}>
           Agent is watching for moments...
         </div>
       </div>
@@ -48,40 +48,45 @@ export default function TipFeed({ tips, moments }: Props) {
 
   return (
     <div style={{
-      background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-      borderRadius: 16, padding: 20,
+      background: '#F0EBE1', borderRadius: 16, padding: 24,
+      boxShadow: '6px 6px 12px #d1cabe, -6px -6px 12px #ffffff',
+      height: '100%', display: 'flex', flexDirection: 'column'
     }}>
-      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 16 }}>
+      <div style={{ fontSize: 11, color: '#6B7280', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 20, fontWeight: 800 }}>
         Live Activity Feed
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 380, overflowY: 'auto' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto', flex: 1, paddingRight: 4 }}>
         {allEvents.map((event, i) => {
           if (event._type === 'tip') {
             const tip = event as TipEvent & { _type: 'tip' };
             return (
               <div key={tip.id} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '10px 14px', borderRadius: 10, animation: i === 0 ? 'fadeUp .4s ease' : 'none',
-                background: 'rgba(38,161,123,0.08)', border: '1px solid rgba(38,161,123,0.2)',
+                padding: '14px 18px', borderRadius: 12, animation: i === 0 ? 'fadeUp .4s ease' : 'none',
+                background: '#F0EBE1',
+                boxShadow: 'inset 4px 4px 8px #d1cabe, inset -4px -4px 8px #ffffff',
+                borderLeft: `4px solid #6B46C1`
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ fontSize: 16 }}>{MOMENT_EMOJIS[tip.momentType] || '💸'}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={{ width: 36, height: 36, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '2px 2px 5px rgba(0,0,0,0.05)' }}>
+                    <span style={{ fontSize: 18 }}>{MOMENT_EMOJIS[tip.momentType] || '💸'}</span>
+                  </div>
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: '#111827' }}>
                       Tipped {tip.creatorName}
                     </div>
-                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
+                    <div style={{ fontSize: 11, color: '#4B5563', marginTop: 3, fontWeight: 600 }}>
                       {tip.momentDescription}
                     </div>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: '#26A17B', fontFamily: "'DM Mono', monospace" }}>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: '#6B46C1', fontFamily: "'DM Mono', monospace" }}>
                     +{tip.amount} {tip.asset}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end', marginTop: 3 }}>
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: STATUS_COLORS[tip.status] }} />
-                    <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)' }}>{timeAgo(tip.timestamp)}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end', marginTop: 5 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: STATUS_COLORS[tip.status] }} />
+                    <span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 600 }}>{timeAgo(tip.timestamp)}</span>
                   </div>
                 </div>
               </div>
@@ -91,14 +96,15 @@ export default function TipFeed({ tips, moments }: Props) {
             return (
               <div key={moment.id} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '8px 14px', borderRadius: 10,
-                background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+                padding: '10px 16px', borderRadius: 10,
+                background: '#F0EBE1', 
+                boxShadow: 'inset 2px 2px 5px #d1cabe, inset -2px -2px 5px #ffffff'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ fontSize: 14, opacity: 0.5 }}>{MOMENT_EMOJIS[moment.type] || '👁️'}</span>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{moment.description}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ fontSize: 16, opacity: 0.6 }}>{MOMENT_EMOJIS[moment.type] || '👁️'}</span>
+                  <div style={{ fontSize: 12, color: '#6B7280', fontWeight: 600 }}>{moment.description}</div>
                 </div>
-                <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)' }}>{timeAgo(moment.timestamp)}</span>
+                <span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 600 }}>{timeAgo(moment.timestamp)}</span>
               </div>
             );
           }

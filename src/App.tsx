@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import FanDashboard from './components/fan/FanDashboard';
 import CreatorDashboard from './components/creator/CreatorDashboard';
 import type { TipEvent, AgentState } from './types';
@@ -25,77 +25,90 @@ export default function App() {
     agentState: DEFAULT_AGENT_STATE,
   });
 
-  const updateShared = (partial: Partial<SharedState>) => {
+  const updateShared = useCallback((partial: Partial<SharedState>) => {
     setShared(prev => ({ ...prev, ...partial }));
-  };
+  }, []);
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#060a10', color: '#e8eaf0',
+      minHeight: '100vh', background: '#F0EBE1', color: '#111827',
       fontFamily: "'Syne', sans-serif", position: 'relative', overflowX: 'hidden',
     }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
         @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-        ::-webkit-scrollbar { width: 3px; }
-        ::-webkit-scrollbar-thumb { background: rgba(38,161,123,0.3); border-radius: 2px; }
-        input[type=range] { -webkit-appearance: none; height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; outline: none; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #26A17B; cursor: pointer; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(167,139,250,0.5); border-radius: 4px; }
+        input[type=range] { -webkit-appearance: none; height: 6px; background: rgba(0,0,0,0.06); border-radius: 3px; outline: none; box-shadow: inset 1px 1px 3px rgba(0,0,0,0.1); }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #6B46C1; cursor: pointer; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); }
       `}</style>
 
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0,
-        backgroundImage: `linear-gradient(rgba(38,161,123,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(38,161,123,0.025) 1px,transparent 1px)`,
+      {/* Web3 Glassmorphic Orbs */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.5,
+        backgroundImage: `linear-gradient(rgba(107,70,193,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(107,70,193,0.03) 1px,transparent 1px)`,
         backgroundSize: '40px 40px' }} />
-      <div style={{ position: 'fixed', top: -200, right: -200, width: 600, height: 600, borderRadius: '50%',
-        background: 'radial-gradient(circle,rgba(38,161,123,0.07) 0%,transparent 65%)', pointerEvents: 'none', zIndex: 0 }} />
-      <div style={{ position: 'fixed', bottom: -200, left: -200, width: 500, height: 500, borderRadius: '50%',
-        background: 'radial-gradient(circle,rgba(240,185,11,0.04) 0%,transparent 65%)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'fixed', top: -150, right: -100, width: 500, height: 500, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(167,139,250,0.3) 0%, transparent 70%)', filter: 'blur(50px)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'fixed', bottom: -150, left: -100, width: 600, height: 600, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(52,211,153,0.25) 0%, transparent 70%)', filter: 'blur(50px)', pointerEvents: 'none', zIndex: 0 }} />
 
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: 1100, margin: '0 auto', padding: '24px 20px' }}>
-
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 12,
-              background: 'linear-gradient(135deg, #26A17B, #1a7a5e)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 22, boxShadow: '0 0 24px rgba(38,161,123,0.4)' }}>⚡</div>
-            <div>
-              <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.5px', color: '#fff' }}>MomentMint</div>
-              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', letterSpacing: '3px', textTransform: 'uppercase' }}>
-                Autonomous Tipping · Tether WDK · OpenClaw
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            {shared.agentState.status !== 'idle' && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '6px 14px',
-                borderRadius: 20, background: 'rgba(38,161,123,0.1)', border: '1px solid rgba(38,161,123,0.3)' }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#26A17B', animation: 'pulse 1.5s infinite' }} />
-                <span style={{ fontSize: 10, color: '#26A17B', fontWeight: 700, letterSpacing: '1px' }}>
-                  AGENT {shared.agentState.status.toUpperCase()}
-                </span>
-              </div>
-            )}
-            <div style={{ display: 'flex', gap: 4, background: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: 4 }}>
-              {(['fan', 'creator'] as View[]).map(v => (
-                <button key={v} onClick={() => setView(v)} style={{
-                  padding: '8px 20px', borderRadius: 9, border: 'none', cursor: 'pointer',
-                  fontSize: 11, fontWeight: 700, letterSpacing: '0.5px',
-                  fontFamily: "'Syne', sans-serif", transition: 'all .2s',
-                  background: view === v ? 'rgba(38,161,123,0.18)' : 'transparent',
-                  color: view === v ? '#26A17B' : 'rgba(255,255,255,0.4)',
-                }}>
-                  {v === 'fan' ? '🎮 Fan View' : '🎬 Creator View'}
-                </button>
-              ))}
+      {/* Udemy-style Nav Header */}
+      <div style={{ 
+        position: 'sticky', top: 0, zIndex: 50,
+        background: 'rgba(240, 235, 225, 0.75)', backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.4)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
+        padding: '16px 40px',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.04)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12,
+            background: 'linear-gradient(135deg, #8B5CF6, #6B46C1)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 22, boxShadow: '4px 4px 10px rgba(107,70,193,0.3), -2px -2px 6px rgba(255,255,255,0.8)' }}>⚡</div>
+          <div>
+            <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.5px', color: '#111827' }}>MomentMint</div>
+            <div style={{ fontSize: 9, color: '#6B7280', letterSpacing: '3px', textTransform: 'uppercase' }}>
+              Autonomous Tipping · Web3
             </div>
           </div>
         </div>
 
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          {shared.agentState.status !== 'idle' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px',
+              borderRadius: 20, background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.8)',
+              boxShadow: 'inset 2px 2px 5px rgba(255,255,255,0.7), 2px 2px 8px rgba(0,0,0,0.05)', backdropFilter: 'blur(10px)' }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', animation: 'pulse 1.5s infinite', boxShadow: '0 0 8px #10B981' }} />
+              <span style={{ fontSize: 11, color: '#047857', fontWeight: 800, letterSpacing: '1px' }}>
+                AGENT {shared.agentState.status.toUpperCase()}
+              </span>
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 12 }}>
+            {(['fan', 'creator'] as View[]).map(v => {
+              const isActive = view === v;
+              return (
+                <button key={v} onClick={() => setView(v)} style={{
+                  padding: '10px 24px', borderRadius: 12, border: 'none', cursor: 'pointer',
+                  fontSize: 12, fontWeight: 700, letterSpacing: '0.5px',
+                  fontFamily: "'Syne', sans-serif", transition: 'all .3s',
+                  background: isActive ? '#F0EBE1' : '#F0EBE1',
+                  color: isActive ? '#6B46C1' : '#6B7280',
+                  boxShadow: isActive 
+                    ? 'inset 4px 4px 8px #d1cabe, inset -4px -4px 8px #ffffff'
+                    : '6px 6px 12px #d1cabe, -6px -6px 12px #ffffff',
+                }}>
+                  {v === 'fan' ? '🎮 Fan View' : '🎬 Creator View'}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: 1200, margin: '0 auto', padding: '40px 20px' }}>
         {/* Both views mounted — only one visible. This keeps agent alive on tab switch */}
         <div style={{ display: view === 'fan' ? 'block' : 'none' }}>
           <FanDashboard shared={shared} onSharedUpdate={updateShared} />
@@ -104,8 +117,8 @@ export default function App() {
           <CreatorDashboard tips={shared.tips} />
         </div>
 
-        <div style={{ textAlign: 'center', padding: '28px 0 8px', fontSize: 10, color: 'rgba(255,255,255,0.15)', letterSpacing: '2px' }}>
-          MOMENTMINT · TETHER WDK · OPENCLAW · RUMBLE · #HackathonGalactica
+        <div style={{ textAlign: 'center', padding: '60px 0 20px', fontSize: 11, color: '#9CA3AF', letterSpacing: '2px', fontWeight: 600 }}>
+          MOMENTMINT · WEB3 TIPPING EXPERT
         </div>
       </div>
     </div>
