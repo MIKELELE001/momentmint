@@ -72,7 +72,7 @@ export default memo(function FanDashboard({ shared, onSharedUpdate }: Props) {
   const agentState = shared.agentState;
   const tips = shared.tips;
   const status = STATUS_CONFIG[agentState.status];
-  const totalSpent = useMemo(() => tips.reduce((s, t) => s + t.amount, 0), [tips]);
+  const totalSpent = agentState.spentThisStream;
   const spendingPct = useMemo(() => activeRule ? Math.min((agentState.spentThisStream / activeRule.maxPerStream) * 100, 100) : 0, [activeRule, agentState.spentThisStream]);
 
   return (
