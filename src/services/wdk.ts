@@ -1,6 +1,5 @@
 import type { Asset, WalletState } from '../types';
-import { WDK } from '@tetherto/wdk';
-
+import WDK from "@tetherto/wdk";
 // ── Types ────────────────────────────────────────────────────────────────────
 interface SendTipParams {
   toAddress: string;
