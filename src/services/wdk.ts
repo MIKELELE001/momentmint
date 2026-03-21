@@ -1,5 +1,14 @@
 import type { Asset, WalletState } from '../types';
-import WDK from "@tetherto/wdk";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let wdkInstance: any = null;
+
+let mockWalletState: WalletState = {
+  address: null,
+  balances: { USDT: 0, XAUt: 0, BTC: 0 },
+  isConnected: false,
+  isLoading: false,
+};
 
 interface SendTipParams {
   toAddress: string;
@@ -14,16 +23,10 @@ interface TipResult {
   error?: string;
 }
 
-let wdkInstance: WDK | null = null;
-let mockWalletState: WalletState = {
-  address: null,
-  balances: { USDT: 0, XAUt: 0, BTC: 0 },
-  isConnected: false,
-  isLoading: false,
-};
-
 export const connectWallet = async (): Promise<WalletState> => {
   if (!wdkInstance) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const WDK = (await import('@tetherto/wdk')).default as any;
     wdkInstance = new WDK({ network: 'mainnet' });
   }
   const wallet = await wdkInstance.wallet.create();
@@ -47,7 +50,7 @@ export const getBalances = async (): Promise<Record<Asset, number>> => {
       BTC: liveBalances.BTC || 0,
     };
   } catch (error) {
-    console.error("Failed to fetch WDK balances:", error);
+    console.error('Failed to fetch WDK balances:', error);
   }
   return mockWalletState.balances;
 };
@@ -65,9 +68,10 @@ export const sendTip = async (params: SendTipParams): Promise<TipResult> => {
     });
     await getBalances();
     return { success: true, txHash: tx.hash };
-  } catch (err: any) {
-    console.error("WDK transaction failed:", err);
-    return { success: false, txHash: null, error: err.message || 'Tx Failed' };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Tx Failed';
+    console.error('WDK transaction failed:', err);
+    return { success: false, txHash: null, error: message };
   }
 };
 
